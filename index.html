@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#167b45">
+<title>Chợ Nhà Mình – Rau củ tươi mỗi ngày</title>
+<style>
+:root{--green:#167b45;--green2:#eaf6ee;--ink:#17251c;--muted:#718078;--line:#e8eee9;--cream:#fbfdfb}
+*{box-sizing:border-box}body{margin:0;background:#f5f8f5;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.top{background:var(--green);color:#fff;padding:10px 16px;text-align:center;font-size:12px}
+header{background:#fff;position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line)}
+.head{max-width:1080px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:10px}.logo{width:42px;height:42px;border-radius:14px;background:var(--green2);display:grid;place-items:center;font-size:24px}
+.brand strong{display:block;font-size:18px;letter-spacing:-.4px}.brand small{color:var(--muted);font-size:11px}
+.cartbtn{border:0;background:var(--green);color:white;padding:11px 14px;border-radius:13px;font-weight:700}
+main{max-width:1080px;margin:auto;padding:18px}
+.hero{background:linear-gradient(115deg,#e5f4e9,#f5fae9);border-radius:22px;padding:25px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;overflow:hidden}
+.hero h1{font-size:clamp(25px,5vw,38px);line-height:1.12;margin:0 0 10px;letter-spacing:-1px;max-width:480px}
+.hero p{color:#50675a;margin:0 0 16px;line-height:1.5}.hero .art{font-size:86px;white-space:nowrap;filter:drop-shadow(0 10px 10px #739b6a33)}
+.pill{display:inline-block;background:#fff;color:var(--green);padding:7px 11px;border-radius:99px;font-size:11px;font-weight:800;margin-bottom:12px}
+.searchrow{display:flex;gap:10px;margin:20px 0 15px}.search{flex:1;border:1px solid var(--line);background:#fff;border-radius:13px;padding:13px 14px;min-width:0;outline-color:var(--green)}
+.categories{display:flex;gap:8px;overflow:auto;padding-bottom:5px;margin-bottom:18px}.cat{white-space:nowrap;border:1px solid var(--line);background:#fff;border-radius:99px;padding:9px 14px;color:#526057;font-size:13px}.cat.active{background:var(--green);color:#fff;border-color:var(--green)}
+.sectiontitle{display:flex;align-items:end;justify-content:space-between;margin:18px 0 12px}.sectiontitle h2{font-size:21px;margin:0}.sectiontitle span{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.product{background:#fff;border:1px solid var(--line);border-radius:17px;padding:12px;min-width:0}
+.pic{height:112px;border-radius:13px;display:grid;place-items:center;font-size:58px;background:linear-gradient(145deg,#f2f8e9,#e9f5e9);margin-bottom:10px}
+.product h3{font-size:15px;margin:0 0 5px}.desc{font-size:11px;color:var(--muted);min-height:28px}
+.price{font-weight:800;color:var(--green);font-size:16px;margin:8px 0 10px}.price small{font-size:11px;color:var(--muted);font-weight:500}
+.add{width:100%;border:0;background:var(--green2);color:var(--green);font-weight:800;border-radius:10px;padding:10px}
+.add:active,.cartbtn:active{transform:scale(.98)}
+.note{margin:22px 0;background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px;color:#536158;font-size:12px;line-height:1.6}
+footer{text-align:center;color:#87938b;padding:24px 12px;font-size:11px}
+.overlay{position:fixed;inset:0;background:#10201577;z-index:10;display:none;align-items:flex-end;justify-content:center}.overlay.show{display:flex}
+.sheet{background:#fff;width:100%;max-width:560px;max-height:88vh;overflow:auto;border-radius:22px 22px 0 0;padding:20px}
+.sheethead{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.sheethead h2{margin:0;font-size:20px}.close{border:0;background:#f0f4f1;border-radius:50%;width:34px;height:34px;font-size:20px}
+.cartline{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}.cartemoji{font-size:28px}.cartinfo{flex:1}.cartinfo strong{display:block;font-size:14px}.cartinfo small{color:var(--muted)}
+.qty{display:flex;align-items:center;gap:9px}.qty button{border:1px solid var(--line);background:white;border-radius:8px;width:27px;height:27px}
+.total{display:flex;justify-content:space-between;font-size:17px;font-weight:800;padding:16px 0}
+.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;background:#fff;outline-color:var(--green)}
+.primary{width:100%;border:0;background:var(--green);color:white;padding:14px;border-radius:12px;font-weight:800}
+.empty{text-align:center;color:var(--muted);padding:28px 8px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#20382a;color:#fff;padding:11px 16px;border-radius:99px;font-size:13px;z-index:20;display:none}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.pic{height:135px}.overlay{align-items:center}.sheet{border-radius:22px}.hero{padding:36px}}
+</style>
+</head>
+<body>
+<div class="top">🥬 Rau củ tươi ngon – phục vụ cư dân trong tòa nhà</div>
+<header><div class="head">
+ <div class="brand"><div class="logo">🥬</div><div><strong>Chợ Nhà Mình</strong><small>Tươi mỗi ngày · Gần nhà bạn</small></div></div>
+ <button class="cartbtn" onclick="openCart()">🛒 Giỏ hàng <span id="cartCount">0</span></button>
+</div></header>
+<main>
+<section class="hero">
+ <div><span class="pill">CHỌN TƯƠI – SỐNG KHỎE</span><h1>Rau củ tươi ngon<br>ngay dưới chân nhà</h1><p>Chọn món yêu thích, đặt hàng nhanh chóng.<br>Giao tận căn hộ hoặc nhận tại quầy.</p></div>
+ <div class="art">🥦🥕🍅</div>
+</section>
+<div class="searchrow"><input id="search" class="search" placeholder="Tìm rau củ, trái cây..." oninput="render()"></div>
+<div class="categories" id="categories"></div>
+<div class="sectiontitle"><h2>Hôm nay có gì ngon?</h2><span id="productCount"></span></div>
+<div class="grid" id="products"></div>
+<div class="note"><strong>💚 Chợ Nhà Mình</strong><br>Giá hiển thị là giá tham khảo. Với sản phẩm cân theo kg, cửa hàng sẽ xác nhận khối lượng và tổng tiền cuối cùng trước khi giao.<br><strong>Lưu ý:</strong> Đây là bản trải nghiệm giao diện, đơn hàng chưa được gửi đến cửa hàng.</div>
+</main>
+<footer>© 2026 Chợ Nhà Mình · Cảm ơn bạn đã ủng hộ cửa hàng gần nhà!</footer>
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeCart()"><div class="sheet">
+ <div class="sheethead"><h2>Giỏ hàng của bạn</h2><button class="close" onclick="closeCart()">×</button></div>
+ <div id="cartItems"></div><div id="checkoutArea"></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<script>
+const items=[
+{id:1,n:"Rau muống",e:"🥬",d:"Bó tươi mỗi ngày",p:12000,u:"bó",c:"Rau xanh"},
+{id:2,n:"Cải ngọt",e:"🥬",d:"Non xanh, dễ chế biến",p:15000,u:"bó",c:"Rau xanh"},
+{id:3,n:"Cà chua",e:"🍅",d:"Đỏ mọng, chín tự nhiên",p:28000,u:"kg",c:"Củ quả"},
+{id:4,n:"Cà rốt",e:"🥕",d:"Giòn ngọt, giàu vitamin",p:25000,u:"kg",c:"Củ quả"},
+{id:5,n:"Khoai tây",e:"🥔",d:"Củ chắc, bở ngon",p:30000,u:"kg",c:"Củ quả"},
+{id:6,n:"Dưa chuột",e:"🥒",d:"Tươi giòn, thanh mát",p:22000,u:"kg",c:"Củ quả"},
+{id:7,n:"Táo đỏ",e:"🍎",d:"Giòn ngọt, dễ ăn",p:45000,u:"kg",c:"Trái cây"},
+{id:8,n:"Chuối",e:"🍌",d:"Chín vừa, thơm ngon",p:25000,u:"nải",c:"Trái cây"},
+{id:9,n:"Cam",e:"🍊",d:"Mọng nước, vị ngọt dịu",p:35000,u:"kg",c:"Trái cây"},
+{id:10,n:"Nấm kim châm",e:"🍄",d:"Đóng gói tiện lợi",p:12000,u:"gói",c:"Khác"},
+{id:11,n:"Trứng gà",e:"🥚",d:"Trứng tươi chọn lọc",p:32000,u:"vỉ",c:"Khác"},
+{id:12,n:"Hành lá",e:"🌿",d:"Thơm tươi, sạch sẽ",p:8000,u:"bó",c:"Rau xanh"}
+];
+let category="Tất cả",cart={};
+const money=n=>n.toLocaleString("vi-VN")+"đ";
+function renderCats(){let cs=["Tất cả","Rau xanh","Củ quả","Trái cây","Khác"];document.getElementById("categories").innerHTML=cs.map(c=>`<button class="cat ${category===c?'active':''}" onclick="category='${c}';renderCats();render()">${c}</button>`).join("")}
+function render(){let q=document.getElementById("search").value.toLowerCase();let list=items.filter(x=>(category==="Tất cả"||x.c===category)&&(x.n.toLowerCase().includes(q)||x.d.toLowerCase().includes(q)));document.getElementById("productCount").textContent=list.length+" sản phẩm";document.getElementById("products").innerHTML=list.map(x=>`<article class="product"><div class="pic">${x.e}</div><h3>${x.n}</h3><div class="desc">${x.d}</div><div class="price">${money(x.p)} <small>/${x.u}</small></div><button class="add" onclick="add(${x.id})">＋ Thêm vào giỏ</button></article>`).join("")||'<div class="empty">Không tìm thấy sản phẩm phù hợp.</div>'}
+function add(id){cart[id]=(cart[id]||0)+1;updateCount();toast("Đã thêm vào giỏ hàng")}
+function updateCount(){document.getElementById("cartCount").textContent=Object.values(cart).reduce((a,b)=>a+b,0)}
+function openCart(){document.getElementById("overlay").classList.add("show");drawCart()}
+function closeCart(){document.getElementById("overlay").classList.remove("show")}
+function drawCart(){let chosen=items.filter(x=>cart[x.id]);let box=document.getElementById("cartItems");let area=document.getElementById("checkoutArea");if(!chosen.length){box.innerHTML='<div class="empty">🛒<br>Giỏ hàng đang trống.<br>Chọn vài món tươi ngon nhé!</div>';area.innerHTML="";return}box.innerHTML=chosen.map(x=>`<div class="cartline"><div class="cartemoji">${x.e}</div><div class="cartinfo"><strong>${x.n}</strong><small>${money(x.p)} / ${x.u}</small></div><div class="qty"><button onclick="changeQty(${x.id},-1)">−</button>${cart[x.id]}<button onclick="changeQty(${x.id},1)">＋</button></div></div>`).join("");let total=chosen.reduce((s,x)=>s+x.p*cart[x.id],0);area.innerHTML=`<div class="total"><span>Tạm tính</span><span>${money(total)}</span></div><div class="field"><label>Họ và tên</label><input id="custName" placeholder="Tên người nhận"></div><div class="field"><label>Số điện thoại</label><input id="custPhone" type="tel" placeholder="Số điện thoại"></div><div class="field"><label>Hình thức nhận hàng</label><select id="delivery"><option>Giao tận căn hộ</option><option>Tự nhận tại quầy</option></select></div><div class="field"><label>Số căn hộ / ghi chú</label><input id="address" placeholder="Ví dụ: Căn 1208, tầng 12"></div><div class="field"><label>Thanh toán</label><select id="payment"><option>Tiền mặt khi nhận hàng</option><option>Chuyển khoản (xác nhận sau)</option></select></div><button class="primary" onclick="demoOrder()">Đặt thử đơn hàng</button><p style="font-size:11px;color:#87938b;line-height:1.5">Đây là bản demo: nút đặt hàng chỉ mô phỏng thao tác, không gửi đơn thật.</p>`}
+function changeQty(id,n){cart[id]+=n;if(cart[id]<=0)delete cart[id];updateCount();drawCart()}
+function demoOrder(){let name=document.getElementById("custName").value.trim(),phone=document.getElementById("custPhone").value.trim();if(!name||!phone){toast("Nhập tên và số điện thoại để trải nghiệm");return}document.getElementById("cartItems").innerHTML=`<div class="empty">✅<h3>Đã mô phỏng đặt hàng!</h3>Cảm ơn ${name}. Đây chỉ là bản trải nghiệm, cửa hàng chưa nhận được đơn này.</div>`;document.getElementById("checkoutArea").innerHTML='<button class="primary" onclick="cart={};updateCount();closeCart();render()">Tiếp tục mua sắm</button>';cart={};updateCount()}
+function toast(t){let el=document.getElementById("toast");el.textContent=t;el.style.display="block";setTimeout(()=>el.style.display="none",1700)}
+renderCats();render();
+</script>
+</body></html>
