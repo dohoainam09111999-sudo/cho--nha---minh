@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#176b45">
+<title>Quản lý cửa hàng | Chợ Nhà Mình</title>
+<style>
+:root{--green:#176b45;--green2:#eaf4ed;--ink:#203128;--muted:#718078;--line:#e3ebe5;--bg:#f4f7f3;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit}button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:pointer}
+header{background:var(--green);color:white;padding:18px max(16px,calc((100vw - 980px)/2));font-weight:800;font-size:19px}
+main{max-width:980px;margin:auto;padding:14px}.card{background:white;border:1px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
+h1{font-size:24px;margin:4px 0 8px}h2{font-size:19px;margin:0 0 12px}.muted{color:var(--muted);font-size:13px;line-height:1.5}
+label{display:block;font-size:13px;font-weight:700;margin:12px 0 6px}
+input,select,textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:13px;background:white;color:var(--ink);outline-color:var(--green)}
+textarea{min-height:70px;resize:vertical}.primary{background:var(--green);color:white}.soft{background:var(--green2);color:var(--green)}.danger{background:#fff0ef;color:var(--red)}
+.hidden{display:none!important}.notice{padding:12px;border-radius:12px;background:var(--green2);color:var(--green);font-size:13px;line-height:1.5;margin-top:12px;overflow-wrap:anywhere}.notice.err{background:#fff0ef;color:var(--red)}
+#login{max-width:460px;margin:7vh auto}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field-full{grid-column:1/-1}
+.tabs{display:flex;gap:8px;overflow:auto;margin:14px 0}.tabs button{white-space:nowrap;background:white;color:var(--ink);border:1px solid var(--line)}.tabs button.active{background:var(--green);color:white}
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.toolbar input{max-width:300px}
+.item{border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;gap:11px;align-items:center;margin:9px 0}.thumb{width:64px;height:64px;border-radius:10px;object-fit:cover;background:var(--green2);flex:none}.details{min-width:0;flex:1}.details b{display:block;overflow-wrap:anywhere}.details small{color:var(--muted);font-size:12px}.actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.actions button{font-size:12px;padding:8px 10px}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#f8faf8;border:1px solid var(--line);border-radius:13px;padding:12px}.stat strong{display:block;color:var(--green);font-size:23px;margin-top:5px}
+.order{border:1px solid var(--line);border-radius:14px;padding:13px;margin:10px 0}.orderhead{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.pill{font-size:11px;background:var(--green2);color:var(--green);border-radius:20px;padding:5px 9px}
+@media(max-width:620px){.grid{grid-template-columns:1fr}.field-full{grid-column:auto}.statgrid{grid-template-columns:repeat(2,1fr)}main{padding:10px}.card{padding:14px}}
+</style>
+</head>
+<body>
+<header>🥬 CHỢ NHÀ MÌNH · QUẢN LÝ CỬA HÀNG</header>
+<main>
+<section id="login" class="card">
+<h1>Đăng nhập cửa hàng</h1>
+<p class="muted">Dùng tài khoản đã tạo trong Supabase Authentication. Chỉ tài khoản được cấp quyền quản trị mới xem và sửa được dữ liệu.</p>
+<form id="loginForm">
+<label>Email</label><input id="email" type="email" autocomplete="username" required placeholder="Email đăng ký Supabase">
+<label>Mật khẩu</label><input id="password" type="password" autocomplete="current-password" required placeholder="Mật khẩu">
+<button class="primary" id="loginBtn" type="submit" style="width:100%;margin-top:16px">Đăng nhập</button>
+</form>
+<div id="loginMsg" class="notice hidden" role="status"></div>
+</section>
+
+<section id="dashboard" class="hidden">
+<div class="card">
+<div class="toolbar"><div><h1>Chào mẹ! 👋</h1><div class="muted" id="account"></div></div><button id="logoutBtn" class="soft">Đăng xuất</button></div>
+<div id="adminMsg" class="notice hidden"></div>
+<div class="statgrid" style="margin-top:14px">
+<div class="stat">Tổng sản phẩm<strong id="statProducts">0</strong></div>
+<div class="stat">Đơn chờ xử lý<strong id="statPending">0</strong></div>
+<div class="stat">Đơn hoàn thành<strong id="statDone">0</strong></div>
+</div>
+</div>
+<nav class="tabs">
+<button class="active" data-tab="products">🥬 Sản phẩm</button>
+<button data-tab="orders">📦 Đơn hàng</button>
+</nav>
+<section id="productsTab">
+<div class="card">
+<h2 id="formTitle">➕ Thêm sản phẩm</h2>
+<input id="productId" type="hidden">
+<div class="grid">
+<div><label>Tên sản phẩm *</label><input id="name" required placeholder="Ví dụ: Rau muống"></div>
+<div><label>Danh mục</label><select id="category"><option>Rau xanh</option><option>Củ quả</option><option>Trái cây</option><option>Nấm</option><option>Thực phẩm</option><option>Gia vị</option><option>Khác</option></select></div>
+<div><label>Giá bán (VNĐ) *</label><input id="price" type="number" min="0" step="500" placeholder="12000"></div>
+<div><label>Đơn vị</label><select id="unit"><option>bó</option><option>kg</option><option>túi</option><option>gói</option><option>vỉ</option><option>nải</option><option>quả</option><option>hộp</option><option>chai</option><option>con</option></select></div>
+<div class="field-full"><label>Mô tả</label><textarea id="description" placeholder="Mô tả ngắn về sản phẩm"></textarea></div>
+<div class="field-full"><label>Đường dẫn ảnh (không bắt buộc)</label><input id="imageUrl" type="url" placeholder="https://..."></div>
+<div><label>Thứ tự hiển thị</label><input id="sortOrder" type="number" value="0"></div>
+<div><label>Trạng thái</label><select id="isActive"><option value="true">Đang bán</option><option value="false">Tạm ẩn</option></select></div>
+</div>
+<div class="actions"><button class="primary" id="saveBtn" type="button">Lưu sản phẩm</button><button class="soft hidden" id="cancelBtn" type="button">Hủy sửa</button></div>
+<div id="formMsg" class="notice hidden"></div>
+</div>
+<div class="card">
+<div class="toolbar"><h2>Danh sách sản phẩm</h2><button class="soft" id="refreshProducts">Làm mới</button></div>
+<input id="search" placeholder="Tìm tên sản phẩm..." style="margin:8px 0">
+<div id="productCount" class="muted"></div><div id="productList"></div>
+</div>
+</section>
+<section id="ordersTab" class="hidden">
+<div class="card">
+<div class="toolbar"><h2>Đơn hàng của khách</h2><button class="soft" id="refreshOrders">Làm mới</button></div>
+<div class="muted">Chọn trạng thái để cập nhật tiến độ đơn hàng.</div>
+<div id="orderList" style="margin-top:12px"></div>
+</div>
+</section>
+</section>
+</main>
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://dpmgtgahyufnuolxxxbt.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_xNLDYBiBpQoaU81m8X40Uw_8Veierdi';
+const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = id => document.getElementById(id);
+let products = [], orders = [];
+
+function show(id,on=true){$(id).classList.toggle('hidden',!on)}
+function notice(id,text,error=false){const el=$(id);el.textContent=text;el.classList.remove('hidden','err');if(error)el.classList.add('err')}
+function money(v){return Number(v||0).toLocaleString('vi-VN')+'đ'}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function explainError(e){
+ const m=(e?.message||String(e)).toLowerCase();
+ if(m.includes('invalid login credentials'))return 'Email hoặc mật khẩu chưa đúng. Kiểm tra lại tài khoản trong Supabase → Authentication → Users.';
+ if(m.includes('email not confirmed'))return 'Email chưa được xác nhận. Cần xác nhận email trong Supabase Authentication.';
+ if(m.includes('failed to fetch')||m.includes('network'))return 'Không kết nối được Supabase. Kiểm tra mạng rồi tải lại trang.';
+ if(m.includes('is_shop_admin')||m.includes('function'))return 'Tài khoản đăng nhập được nhưng cơ sở dữ liệu chưa có hàm kiểm tra quyền quản trị. Cần chạy SQL cấu hình quản trị.';
+ if(m.includes('permission denied')||m.includes('row-level security')||m.includes('violates row-level'))return 'Tài khoản chưa được cấp quyền quản trị trong bảng admin_users của Supabase.';
+ return e?.message || String(e);
+}
+async function verifyAdmin(){
+ const {data,error}=await db.rpc('is_shop_admin');
+ if(error)throw error;
+ if(data!==true)throw new Error('Tài khoản chưa được cấp quyền quản trị trong bảng admin_users.');
+}
+function setLoggedIn(user){
+ show('login',false);show('dashboard',true);$('account').textContent=user.email||'Đã đăng nhập';
+}
+async function enterApp(user){
+ await verifyAdmin();
+ setLoggedIn(user);
+ await Promise.all([loadProducts(),loadOrders()]);
+}
+async function loadProducts(){
+ $('productList').textContent='Đang tải sản phẩm...';
+ const {data,error}=await db.from('products').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+ if(error){notice('formMsg','Không tải được sản phẩm: '+explainError(error),true);$('productList').textContent='';return}
+ products=data||[];renderProducts();$('statProducts').textContent=products.length;
+}
+function renderProducts(){
+ const q=$('search').value.trim().toLocaleLowerCase('vi');
+ const list=products.filter(p=>(p.name||'').toLocaleLowerCase('vi').includes(q));
+ $('productCount').textContent=`${products.length} sản phẩm · ${list.length} kết quả`;
+ if(!list.length){$('productList').innerHTML='<p class="muted">Chưa có sản phẩm. Hãy thêm sản phẩm đầu tiên ở phía trên.</p>';return}
+ $('productList').innerHTML=list.map(p=>{
+ const pic=p.image_url?`<img class="thumb" src="${esc(p.image_url)}" alt="">`:'<div class="thumb" style="display:grid;place-items:center;font-size:28px">🥬</div>';
+ return `<article class="item">${pic}<div class="details"><b>${esc(p.name)}</b><small>${esc(p.category)} · ${money(p.price)}/${esc(p.unit)} · ${p.is_active?'Đang bán':'Đang ẩn'}</small><div class="actions"><button class="soft" data-edit="${p.id}">Sửa</button><button class="soft" data-toggle="${p.id}" data-active="${!p.is_active}">${p.is_active?'Tạm ẩn':'Hiện lại'}</button><button class="danger" data-delete="${p.id}">Xóa</button></div></div></article>`;
+ }).join('');
+}
+function resetForm(){
+ $('productId').value='';$('name').value='';$('category').value='Rau xanh';$('price').value='';$('unit').value='bó';$('description').value='';$('imageUrl').value='';$('sortOrder').value='0';$('isActive').value='true';
+ $('formTitle').textContent='➕ Thêm sản phẩm';$('saveBtn').textContent='Lưu sản phẩm';show('cancelBtn',false);
+}
+async function saveProduct(){
+ const id=$('productId').value, name=$('name').value.trim(), priceText=$('price').value, price=Number(priceText);
+ if(!name||priceText===''||!Number.isFinite(price)||price<0){notice('formMsg','Nhập tên sản phẩm và giá hợp lệ nhé.',true);return}
+ const payload={name,category:$('category').value,description:$('description').value.trim(),price,unit:$('unit').value,image_url:$('imageUrl').value.trim()||null,is_active:$('isActive').value==='true',sort_order:Number($('sortOrder').value||0)};
+ const btn=$('saveBtn');btn.disabled=true;btn.textContent='Đang lưu...';
+ try{
+ const result=id?await db.from('products').update(payload).eq('id',id):await db.from('products').insert(payload);
+ if(result.error)throw result.error;
+ notice('formMsg',id?'Đã cập nhật sản phẩm.':'Đã thêm sản phẩm.');
+ resetForm();await loadProducts();
+ }catch(e){notice('formMsg','Không lưu được: '+explainError(e),true)}
+ finally{btn.disabled=false;btn.textContent='Lưu sản phẩm'}
+}
+function editProduct(id){
+ const p=products.find(x=>x.id===id);if(!p)return;
+ $('productId').value=p.id;$('name').value=p.name||'';$('category').value=p.category||'Khác';$('price').value=p.price??'';$('unit').value=p.unit||'kg';$('description').value=p.description||'';$('imageUrl').value=p.image_url||'';$('sortOrder').value=p.sort_order??0;$('isActive').value=String(!!p.is_active);
+ $('formTitle').textContent='✏️ Sửa sản phẩm';$('saveBtn').textContent='Lưu thay đổi';show('cancelBtn',true);$('formTitle').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function loadOrders(){
+ $('orderList').textContent='Đang tải đơn hàng...';
+ const {data,error}=await db.from('orders').select('id,customer_name,customer_phone,apartment_info,delivery_type,payment_method,customer_note,status,subtotal,delivery_fee,total,created_at,order_items(product_name,unit,quantity,unit_price,line_total)').order('created_at',{ascending:false}).limit(100);
+ if(error){$('orderList').textContent='';notice('adminMsg','Không tải được đơn hàng: '+explainError(error),true);return}
+ orders=data||[];renderOrders();
+ $('statPending').textContent=orders.filter(o=>['new','confirmed','preparing','delivering'].includes(o.status)).length;
+ $('statDone').textContent=orders.filter(o=>o.status==='completed').length;
+}
+const statusNames={new:'Mới đặt',confirmed:'Đã xác nhận',preparing:'Đang chuẩn bị',delivering:'Đang giao',completed:'Hoàn thành',cancelled:'Đã hủy'};
+function renderOrders(){
+ if(!orders.length){$('orderList').innerHTML='<p class="muted">Chưa có đơn hàng nào.</p>';return}
+ $('orderList').innerHTML=orders.map(o=>{
+ const items=(o.order_items||[]).map(i=>`<li>${esc(i.product_name)} — ${Number(i.quantity)} ${esc(i.unit)} × ${money(i.unit_price)} = ${money(i.line_total)}</li>`).join('');
+ const dt=new Date(o.created_at).toLocaleString('vi-VN');
+ return `<article class="order"><div class="orderhead"><b>Đơn #${esc(o.id.slice(0,8))}</b><span class="pill">${esc(statusNames[o.status]||o.status)}</span></div><p><b>${esc(o.customer_name)}</b> · ${esc(o.customer_phone)}<br><span class="muted">${esc(o.apartment_info||'')} · ${dt}</span></p><ul>${items}</ul><p class="muted">${o.delivery_type==='delivery'?'Giao tận nhà':'Khách tự lấy'} · ${o.payment_method==='cash'?'Tiền mặt':'Chuyển khoản'}${o.customer_note?' · Ghi chú: '+esc(o.customer_note):''}</p><b>Tổng: ${money(o.total)}</b><div class="grid" style="margin-top:10px"><div><label>Cập nhật trạng thái</label><select data-status="${o.id}">${Object.entries(statusNames).map(([k,v])=>`<option value="${k}" ${o.status===k?'selected':''}>${v}</option>`).join('')}</select></div><div style="align-self:end"><button class="primary" data-save-status="${o.id}" style="width:100%">Lưu trạng thái</button></div></div></article>`;
+ }).join('');
+}
+$('loginForm').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const btn=$('loginBtn');btn.disabled=true;btn.textContent='Đang đăng nhập...';show('loginMsg',false);
+ try{
+ const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+ if(error)throw error;
+ if(!data.session)throw new Error('Đăng nhập không tạo được phiên làm việc.');
+ await enterApp(data.user);$('password').value='';
+ }catch(e){notice('loginMsg',explainError(e),true);await db.auth.signOut().catch(()=>{})}
+ finally{btn.disabled=false;btn.textContent='Đăng nhập'}
+});
+$('logoutBtn').addEventListener('click',async()=>{await db.auth.signOut();show('dashboard',false);show('login',true)});
+$('saveBtn').addEventListener('click',saveProduct);$('cancelBtn').addEventListener('click',resetForm);
+$('refreshProducts').addEventListener('click',loadProducts);$('refreshOrders').addEventListener('click',loadOrders);
+$('search').addEventListener('input',renderProducts);
+$('productList').addEventListener('click',async e=>{
+ const edit=e.target.closest('[data-edit]'),toggle=e.target.closest('[data-toggle]'),del=e.target.closest('[data-delete]');
+ if(edit)editProduct(edit.dataset.edit);
+ if(toggle){const {error}=await db.from('products').update({is_active:toggle.dataset.active==='true'}).eq('id',toggle.dataset.toggle);if(error)notice('formMsg','Không cập nhật được: '+explainError(error),true);else await loadProducts()}
+ if(del){const p=products.find(x=>x.id===del.dataset.delete);if(p&&confirm('Xóa sản phẩm '+p.name+'?')){const {error}=await db.from('products').delete().eq('id',p.id);if(error)notice('formMsg','Không xóa được: '+explainError(error),true);else await loadProducts()}}
+});
+$('orderList').addEventListener('click',async e=>{
+ const btn=e.target.closest('[data-save-status]');if(!btn)return;
+ const id=btn.dataset.saveStatus,status=$('orderList').querySelector(`[data-status="${id}"]`).value;
+ btn.disabled=true;btn.textContent='Đang lưu...';
+ const {error}=await db.from('orders').update({status}).eq('id',id);
+ if(error)notice('adminMsg','Không cập nhật được đơn: '+explainError(error),true);else{notice('adminMsg','Đã cập nhật trạng thái đơn hàng.');await loadOrders()}
+ btn.disabled=false;btn.textContent='Lưu trạng thái';
+});
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+ document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));
+ show('productsTab',btn.dataset.tab==='products');show('ordersTab',btn.dataset.tab==='orders');
+}));
+(async()=>{
+ try{
+ const {data:{session},error}=await db.auth.getSession();if(error)throw error;
+ if(session){await enterApp(session.user)}
+ }catch(e){notice('loginMsg',explainError(e),true)}
+})();
+</script>
+</body>
+</html>
